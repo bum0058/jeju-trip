@@ -313,15 +313,25 @@ var SPOTS = [
   { id:"lee_chunok", name:"이춘옥원조고등어쌈밥 제주애월본점", category:"food", address:"제주 제주시 애월읍 일주서로 7213",
     photo:"https://api.cdn.visitjeju.net/photomng/imgpath/201804/30/3961d497-b5cf-4888-98b7-2f4f30af5952.webp",
     desc:"고등어조림·고등어구이 쌈밥으로 알려진 애월 해변뷰 맛집.",
-    caution:"브레이크타임(16:00~17:00)과 화요일 휴무 확인 권장." }
+    caution:"브레이크타임(16:00~17:00)과 화요일 휴무 확인 권장." },
+  { id:"byeolbit_park", name:"제주별빛누리공원", category:"play", address:"제주 제주시 선돌목동길 60 별빛누리공원",
+    photo:"https://api.cdn.visitjeju.net/photomng/imgpath/202606/22/1a2062d6-ab74-48e6-a643-3c4040eef029.webp",
+    desc:"4D 영상관, 천체투영관, 대형 천체망원경 관측실을 갖춘 천문우주 체험공원.",
+    caution:"관측실은 맑은 밤에만 운영. 매주 월요일 휴무, 마감 1시간 30분 전 입장마감 확인 권장." },
+  { id:"uniqlo_ido", name:"유니클로 제주이도점", category:"etc", address:"제주 제주시 구남로8길 1",
+    photo:"https://upload.wikimedia.org/wikipedia/commons/9/92/UNIQLO_logo.svg",
+    desc:"제주시 이도동에 위치한 유니클로 매장.",
+    caution:"이 매장의 실제 매장 사진을 찾지 못해 브랜드 로고로 대신 표시했습니다." }
 ];
 
 /* ====================================================================
    일자별 동선 — day, case 조합으로 여러 경로안을 정의합니다.
    spotIds 순서대로 선을 연결하고, 번호 배지를 표시합니다.
-   아직 일정이 정해지지 않아 비워둠 — 1일차/2일차 장소가 정해지면 채웁니다.
    ==================================================================== */
-var ROUTES = [];
+var ROUTES = [
+  { key:"d1", day:1, label:"1일차 동선", color:"var(--day1)",
+    spotIds:["idi_guksu","uniqlo_ido","monad","mangwon_manmul","saeuri_gimbap","geumho_meat","jeju_avatar","blue_elephant","seongmi_garden","bigrove_be"] }
+];
 
 var CAT_META = { food:{label:"맛집",cls:"food"}, view:{label:"풍경",cls:"view"}, play:{label:"놀거리",cls:"play"}, etc:{label:"기타",cls:"etc"} };
 var CAT_COLOR = { food:"#FF7A45", view:"#2D9CDB", play:"#27AE60", etc:"#9B59B6" };
