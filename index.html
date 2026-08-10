@@ -79,8 +79,10 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
 .gate-card{background:#fff;border-radius:20px;padding:32px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.25)}
 .gate-q{font-size:20px;font-weight:800;color:var(--text);line-height:1.6;margin-bottom:20px}
 .gate-q b{color:var(--primary)}
-.gate-blank{width:38px;height:44px;border:2px solid var(--border);border-radius:10px;font-size:22px;text-align:center;font-weight:800;color:var(--primary);margin:0 3px;vertical-align:middle}
-.gate-blank:focus{outline:none;border-color:var(--primary)}
+.gate-blanks-wrap{position:relative;display:inline-block;vertical-align:middle}
+.gate-cell{display:inline-block;width:38px;height:44px;line-height:44px;border:2px solid var(--border);border-radius:10px;font-size:22px;font-weight:800;color:var(--primary);text-align:center;margin:0 3px;transition:.15s}
+.gate-cell.active{border-color:var(--primary)}
+.gate-real-input{position:absolute;top:0;left:0;width:100%;height:44px;opacity:0;border:none;outline:none;background:transparent;font-size:22px;padding:0;margin:0}
 .gate-input{width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;font-size:16px;text-align:center;margin-bottom:12px}
 .gate-input:focus{outline:none;border-color:var(--primary)}
 .gate-btn{width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
@@ -92,7 +94,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
 
 <div id="gate">
   <div class="gate-card">
-    <div class="gate-q">시작하시려면 아래 빈칸을 채우시오.<br><br><span style="font-size:26px">나는 이범식을 <input type="text" class="gate-blank" id="gateBlank1" maxlength="1" autocomplete="off"><input type="text" class="gate-blank" id="gateBlank2" maxlength="1" autocomplete="off"> 한다</span></div>
+    <div class="gate-q">시작하시려면 아래 빈칸을 채우시오.<br><br><span style="font-size:26px">나는 이범식을 <span class="gate-blanks-wrap"><span class="gate-cell" id="gateCell1"></span><span class="gate-cell" id="gateCell2"></span><input type="text" class="gate-real-input" id="gateInput" maxlength="2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></span> 한다</span></div>
     <button class="gate-btn" id="gateBtn">입장하기</button>
     <div class="gate-error" id="gateError"></div>
   </div>
@@ -286,7 +288,16 @@ var SPOTS = [
     photo:"https://d12zq4w4guyljn.cloudfront.net/20260226102955_photo1_ae87d4eababc.webp",
     desc:"성산읍에 위치한 흑돼지 맛집.",
     caution:"웨이팅이 있을 수 있어 방문 전 영업시간/휴무일 확인 권장.",
-    link:"https://www.instagram.com/reel/DYG317evNM5/" }
+    link:"https://www.instagram.com/reel/DYG317evNM5/" },
+  { id:"pyeongdamok", name:"평담옥", category:"food", address:"제주 제주시 원노형로 66 2층 (노형동)",
+    photo:"https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/753545995_18079642703667412_5276588730896889197_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=103&ig_cache_key=Mzk0NzI4MTU4NzA0MzE3NDc5OQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMzA3Mi5oZHIucmVndWxhcl9waG90by5DMiJ9&_nc_ohc=pIL2qFlDeN0Q7kNvwF3NYLI&_nc_oc=AdrlF_2TiHVCVrZ-ZrpFjXrCzF1jhlX8LUTYaoLLe0Lp-z8HZlkCDcL_l-V5Da59bKc&_nc_zt=23&se=-1&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=tOjMWNBm-Pz7iQrqrspubg&_nc_ss=7f60f&oh=00_AQEcIT1jjaUqDJjTd2O_QCXxPNnZsXVnq2fR_A1D-D_jtQ&oe=6A7F9D6D",
+    desc:"평양냉면 등 이북식 요리로 알려진 노형동 맛집.",
+    caution:"웨이팅이 있을 수 있어 방문 전 영업시간/휴무일 확인 권장.",
+    link:"https://www.instagram.com/p/DbHkKGMiSEV/" },
+  { id:"jeju_shooting", name:"제주실탄사격장", category:"play", address:"제주 서귀포시 소보리당로164번길 62 3층",
+    photo:"https://image6.yanolja.com/leisure/7NtkaXgmTxXf6P2V",
+    desc:"실탄 권총 사격과 BB탄, 시뮬레이션 사격을 체험할 수 있는 제주 유일의 실내 사격장.",
+    caution:"만 나이 등 이용 연령 제한이 있을 수 있어 방문 전 확인 권장. 안전 수칙을 반드시 준수하세요." }
 ];
 
 /* ====================================================================
@@ -505,45 +516,42 @@ function startApp(){
   document.getElementById("modalBackdrop").addEventListener("click", closeModal);
 }
 
+function updateGateCells(){
+  var input = document.getElementById("gateInput");
+  var cell1 = document.getElementById("gateCell1");
+  var cell2 = document.getElementById("gateCell2");
+  var v = input.value;
+  cell1.textContent = v[0] || "";
+  cell2.textContent = v[1] || "";
+  cell1.classList.toggle("active", v.length === 0);
+  cell2.classList.toggle("active", v.length === 1);
+}
+
 function checkGate(){
-  var b1 = document.getElementById("gateBlank1");
-  var b2 = document.getElementById("gateBlank2");
+  var input = document.getElementById("gateInput");
   var error = document.getElementById("gateError");
-  var answer = (b1.value + b2.value).trim();
+  var answer = input.value.trim();
   if (answer === "사랑") {
     document.getElementById("gate").style.display = "none";
     document.getElementById("appRoot").style.display = "";
     startApp();
   } else {
     error.textContent = "틀렸습니다. 다시 입력해주세요.";
-    b1.value = "";
-    b2.value = "";
-    b1.focus();
+    input.value = "";
+    updateGateCells();
+    input.focus();
   }
 }
 
 document.addEventListener("DOMContentLoaded", function(){
-  var b1 = document.getElementById("gateBlank1");
-  var b2 = document.getElementById("gateBlank2");
+  var input = document.getElementById("gateInput");
   document.getElementById("gateBtn").addEventListener("click", checkGate);
-  var composing = false;
-  b1.addEventListener("compositionstart", function(){ composing = true; });
-  b1.addEventListener("compositionend", function(){
-    composing = false;
-    b1.value = b1.value.slice(-1);
-    if (b1.value) b2.focus();
+  input.addEventListener("input", updateGateCells);
+  input.addEventListener("keydown", function(e){
+    if (e.key === "Enter") checkGate();
   });
-  b1.addEventListener("input", function(){
-    if (composing) return;
-    b1.value = b1.value.slice(-1);
-    if (b1.value) b2.focus();
-  });
-  [b1, b2].forEach(function(el){
-    el.addEventListener("keydown", function(e){
-      if (e.key === "Enter") checkGate();
-    });
-  });
-  b1.focus();
+  updateGateCells();
+  input.focus();
 });
 </script>
 </body>
