@@ -456,7 +456,7 @@ function openModal(spot){
       '<div class="modal-desc">' + spot.desc + '</div>' +
       '<div style="font-size:11px;color:var(--sub);margin-bottom:10px">📌 ' + spot.address + '</div>' +
       (spot.caution ? '<div class="caution-box"><b>⚠ 주의사항</b>' + spot.caution + '</div>' : '') +
-      '<a class="modal-link" href="https://map.naver.com/v5/search/' + encodeURIComponent(spot.name + ' ' + spot.address) + '" target="_blank">📍 네이버지도로 길찾기</a>' +
+      '<a class="modal-link" href="https://map.naver.com/v5/search/' + encodeURIComponent(spot.name) + '" target="_blank">📍 네이버지도로 길찾기</a>' +
       (spot.link ? '<a class="modal-link" style="background:var(--purple);margin-top:8px" href="' + spot.link + '" target="_blank">🔗 인스타그램 참고</a>' : '') +
     '</div>';
   document.getElementById("modalBackdrop").classList.add("show");
