@@ -73,9 +73,32 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
 .modal-link{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--primary);color:#fff;padding:12px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none}
 
 .order-badge{position:absolute;top:-6px;left:-6px;background:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+
+/* GATE */
+#gate{position:fixed;inset:0;background:linear-gradient(135deg,#2D9CDB 0%,#1B7CB8 60%,#27AE60 130%);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px}
+.gate-card{background:#fff;border-radius:20px;padding:32px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.gate-q{font-size:20px;font-weight:800;color:var(--text);line-height:1.6;margin-bottom:20px}
+.gate-q b{color:var(--primary)}
+.gate-blank{width:38px;height:44px;border:2px solid var(--border);border-radius:10px;font-size:22px;text-align:center;font-weight:800;color:var(--primary);margin:0 3px;vertical-align:middle}
+.gate-blank:focus{outline:none;border-color:var(--primary)}
+.gate-input{width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;font-size:16px;text-align:center;margin-bottom:12px}
+.gate-input:focus{outline:none;border-color:var(--primary)}
+.gate-btn{width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+.gate-btn:active{opacity:.8}
+.gate-error{color:#E74C3C;font-size:13px;font-weight:700;margin-top:10px;min-height:18px}
 </style>
 </head>
 <body>
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-q">시작하시려면 아래 빈칸을 채우시오.<br><br><span style="font-size:26px">나는 이범식을 <input type="text" class="gate-blank" id="gateBlank1" maxlength="1" autocomplete="off"><input type="text" class="gate-blank" id="gateBlank2" maxlength="1" autocomplete="off"> 한다</span></div>
+    <button class="gate-btn" id="gateBtn">입장하기</button>
+    <div class="gate-error" id="gateError"></div>
+  </div>
+</div>
+
+<div id="appRoot" style="display:none">
 
 <div class="header">
   <h1>🍊 제주 여행 플래너</h1>
@@ -110,6 +133,8 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
 <div class="modal" id="modal">
   <button class="modal-close" id="modalClose">✕</button>
   <div id="modalContent"></div>
+</div>
+
 </div>
 
 <script>
@@ -436,7 +461,7 @@ function buildRouteBar(){
   });
 }
 
-document.addEventListener("DOMContentLoaded", function(){
+function startApp(){
   buildRouteBar();
   loadNaverMapScript();
   renderList();
@@ -478,6 +503,47 @@ document.addEventListener("DOMContentLoaded", function(){
 
   document.getElementById("modalClose").addEventListener("click", closeModal);
   document.getElementById("modalBackdrop").addEventListener("click", closeModal);
+}
+
+function checkGate(){
+  var b1 = document.getElementById("gateBlank1");
+  var b2 = document.getElementById("gateBlank2");
+  var error = document.getElementById("gateError");
+  var answer = (b1.value + b2.value).trim();
+  if (answer === "사랑") {
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("appRoot").style.display = "";
+    startApp();
+  } else {
+    error.textContent = "틀렸습니다. 다시 입력해주세요.";
+    b1.value = "";
+    b2.value = "";
+    b1.focus();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  var b1 = document.getElementById("gateBlank1");
+  var b2 = document.getElementById("gateBlank2");
+  document.getElementById("gateBtn").addEventListener("click", checkGate);
+  var composing = false;
+  b1.addEventListener("compositionstart", function(){ composing = true; });
+  b1.addEventListener("compositionend", function(){
+    composing = false;
+    b1.value = b1.value.slice(-1);
+    if (b1.value) b2.focus();
+  });
+  b1.addEventListener("input", function(){
+    if (composing) return;
+    b1.value = b1.value.slice(-1);
+    if (b1.value) b2.focus();
+  });
+  [b1, b2].forEach(function(el){
+    el.addEventListener("keydown", function(e){
+      if (e.key === "Enter") checkGate();
+    });
+  });
+  b1.focus();
 });
 </script>
 </body>
